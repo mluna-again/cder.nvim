@@ -4,6 +4,11 @@ local config = require("telescope.config").values
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
+local find_cmd = { "find", ".", "-maxdepth", "15", "-type", "d" }
+if vim.fn.executable("fd") == 1 then
+	find_cmd = { "fd", "--hidden", "--type", "d", "--maxdepth", "15" }
+end
+
 local M = {}
 M.cd = function(opts)
 	opts = opts or {}
