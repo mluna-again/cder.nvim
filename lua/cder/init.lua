@@ -14,7 +14,7 @@ M.cd = function(opts)
 	opts = opts or {}
 	pickers.new(opts, {
 		prompt_title = "Change directory",
-		finder = finders.new_oneshot_job({ "find", ".", "-maxdepth", "10", "-type", "d" }, opts),
+		finder = finders.new_oneshot_job(find_cmd, opts),
 		sorter = config.file_sorter(opts),
 		attach_mappings = function(bufnr, map)
 			actions.select_default:replace(function()
