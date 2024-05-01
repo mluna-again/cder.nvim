@@ -12,6 +12,8 @@ end
 local M = {}
 M.cd = function(opts)
 	opts = opts or {}
+	print(vim.inspect(opts))
+
 	pickers.new(opts, {
 		prompt_title = "Change directory",
 		finder = finders.new_oneshot_job(find_cmd, opts),
