@@ -4,19 +4,37 @@ local config = require("telescope.config").values
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
-local find_cmd = { "find", ".", "-maxdepth", "15", "-type", "d" }
-if vim.fn.executable("fd") == 1 then
-	find_cmd = { "fd", "--hidden", "--type", "d", "--maxdepth", "15" }
+local M = {}
+
+M.find_cmd = function(opts)
+	local fd_installed = vim.fn.executable("fd")
+
+	local cmd = { "find", ".", "-maxdepth", "15", "-type", "d" }
+	if fd_installed == 1 then
+		cmd = { "fd", "--hidden", "--type", "d", "--maxdepth", "15" }
+	end
+
+	local excludes = opts.exclude
+	if not (excludes == nil) then
+		for k, v in pairs(excludes) do
+			if fd_installed == 1 then
+				cmd = vim.list_extend(cmd, { "-E", v })
+			else
+				cmd = vim.list_extend(cmd, { "-not", "-iname", v })
+			end
+		end
+	end
+
+	return cmd
 end
 
-local M = {}
+
 M.cd = function(opts)
 	opts = opts or {}
-	print(vim.inspect(opts))
 
 	pickers.new(opts, {
 		prompt_title = "Change directory",
-		finder = finders.new_oneshot_job(find_cmd, opts),
+		finder = finders.new_oneshot_job(M.find_cmd(opts), opts),
 		sorter = config.file_sorter(opts),
 		attach_mappings = function(bufnr, map)
 			actions.select_default:replace(function()
@@ -31,5 +49,7 @@ M.cd = function(opts)
 		end,
 	}):find()
 end
+
+M.cd({exclude= {"Library"}})
 
 return M
