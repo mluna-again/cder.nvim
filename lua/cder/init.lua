@@ -50,6 +50,4 @@ M.cd = function(opts)
 	}):find()
 end
 
-M.cd({exclude= {"Library"}})
-
 return M
